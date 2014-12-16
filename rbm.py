@@ -1,19 +1,18 @@
-#!/s/python-3.4.1/bin/python3.4
-
 """
 
 In this file, I provide an implementation of a Restricted
-Botlzmann machine with real-valued input units (of range [0,1]).
+Botlzmann machine with input units' values in range [0,1].
 
 The notation and the training procedure followes the Hinton's paper
 "A Practical Guide to Training Restricted Boltzmann Machines", 2010.
 
 """
 
-from loader import load_mnist, load_ads, save_mnist_image
+from loader import load_mnist, save_mnist_image
 from time import time
 import numpy as np
 import os
+import sys
 
 
 def rbm(dataset, num_hidden, learn_rate, epochs, batchsize):
@@ -117,7 +116,7 @@ def logistic(x,w,b):
 
    return 1.0 / (1 + np.exp(- xw - b))
 
-      
+
 def reconstruct(v0, w, a, b):
    """
 
@@ -158,6 +157,15 @@ def sample_hidden(v0,w,b):
 
 
 def save_weights(w, a, b, directory, n_examples, num_hidden):
+   """
+
+   Save learned weights in a folder to be able to 
+   use them later (e.g. for mapping the data into
+   new representation produced by RBM)
+   
+
+   """
+
    if not os.path.exists(directory):
       os.makedirs(directory)
 
@@ -169,21 +177,12 @@ def save_weights(w, a, b, directory, n_examples, num_hidden):
    np.save(b_name, b)
 
 
-
-
-def test_ads():
-   data, labels = load_ads()
-   print(data[0])
-   num_hidden = 1000
-   n_examples = 3279
-   w, a, b  = rbm(data, num_hidden, learn_rate = 0.001, epochs = 10, batchsize = 100)
-   print("Saving weights...")
-   save_weights(w, a, b, "Output", n_examples, num_hidden)
-
-def test_mnist():
+def test_mnist(n_examples, num_hidden, epochs, learn_rate):
    """
 
-   As a test case, load train set images, then train RBM,
+   Example test case: 
+
+   Load train set images, then train RBM,
    then use several test set images to measure the
    reconstruction error on the unseen data points.
    Fnally, save the reconstructed images and learned weights 
@@ -192,12 +191,10 @@ def test_mnist():
    """
 
    # load data
-   n_examples = 10000
    images, labels = load_mnist(n_examples, training = True)
 
    # train one layer of RBM
-   num_hidden = 500
-   w, a, b  = rbm(images, num_hidden, learn_rate = 0.1, epochs = 50, batchsize = 100)
+   w, a, b  = rbm(images, num_hidden, learn_rate, epochs, batchsize = 100)
 
    # save all weights
    print("Saving weights...")
@@ -215,5 +212,14 @@ def test_mnist():
 
 
 if __name__ == '__main__':
-   test_mnist()
+   if len(sys.argv) == 5:
+      # user provided the params
+      n_examples = int(sys.argv[1])
+      num_hidden = int(sys.argv[2])
+      epochs = int(sys.argv[3])
+      learn_rate = float(sys.argv[4])
+      # run!
+      test_mnist(n_examples, num_hidden, epochs, learn_rate)
+   else:
+      test_mnist(1000, 100, 50, 0.1)
 

@@ -1,9 +1,11 @@
-#!/s/python-3.4.1/bin/python3.4
-
 """
 
 Convert my data (represented as numpy matrix [num_ex] x [features])
 into the arff format. Class will be the last attribute.
+
+This is useful when we want to feed the new representation of
+the data produced by an RBM into another machine learning toolkit
+like Weka.
 
 """
 

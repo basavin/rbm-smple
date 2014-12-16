@@ -1,5 +1,3 @@
-#!/s/python-3.4.1/bin/python3.4
-
 import struct
 from pylab import *
 from array import array
@@ -18,18 +16,18 @@ def load_mnist(n_examples=0, training = True):
    @return images: np-array of dims [n_examples] x [n_rows * n_cols]
            labels: np-array of dims [n_examples] x 1
 
-   Assumes that this script is in the same folder as files
+   Assumes that this script has access to data/ folder with files
    - train-images-idx3-ubyte, train-labels-idx1-ubyte, 
    - t10k-images-idx3-ubyte,  t10k-labels-idx1-ubyte
 
    """
 
    if training:
-      values = 'train-images-idx3-ubyte'
-      labels = 'train-labels-idx1-ubyte'
+      values = 'data/train-images-idx3-ubyte'
+      labels = 'data/train-labels-idx1-ubyte'
    else:
-      values = 't10k-images-idx3-ubyte'
-      labels = 't10k-labels-idx1-ubyte'
+      values = 'data/t10k-images-idx3-ubyte'
+      labels = 'data/t10k-labels-idx1-ubyte'
    
    print("Trying to open datafiles...")
    with open(values, "rb") as f:
@@ -58,24 +56,35 @@ def load_mnist(n_examples=0, training = True):
       raw = array("B", f.read(int(n_examples))) 
       labels = np.array(raw, dtype=np.uint8)
 
-   print("Loading completed.\n")
+   print("Loading data completed.\n")
    return images, labels
 
       
 def filter_by_digit_mnist(digit, images, labels):
    """
 
-   Fitler the array of images and return only those that
-   have a label specified by parameter @digit
+   Note: This is an example function of what you can do 
+   with the dataset of MNIST digits loaded in memory.
+
+   Filter the array of images and return only those images 
+   that have a label specified by parameter @digit
 
    """
 
    indexes = [i for i in range(len(labels)) if labels[i] == digit]
-   filtered = images[indexes]
-   return filtered
+   return images[indexes]
 
 
 def save_mnist_image(image, directory, filename):
+   """
+
+   Using numpy/matplotlib library, save the mnist
+   train examples as actual images
+
+   @directory - save image in this directory
+   @filename - using this string as a filename
+
+   """
    if not os.path.exists(directory):
       os.makedirs(directory)
    imshow(image.reshape((28,28)), cmap=cm.gray)
@@ -83,46 +92,25 @@ def save_mnist_image(image, directory, filename):
    savefig(directory + os.sep + filename)
 
 
-def load_ads():
-   # 3279 examples and 1558 features for each example
-   data = np.zeros((3279, 1558))
-   labels = []
-   i = 0
-   for line in open("ad.arff", "r"):
-      line = line.strip()
-      if len(line) == 0: continue
-      if line.startswith("@"): continue
-
-      tokens = line.split(",")
-      
-      for j in range(len(tokens)-1):
-         data[i][j] = float(tokens[j])
-
-      labels.append(tokens[-1])
-      i+=1
-
-   # make sure that all values are between 0 and 1
-   col1_max = data[:,0].max()
-   col2_max = data[:,1].max()
-   data[:,0] = np.true_divide(data[:,0], col1_max)
-   data[:,1] = np.true_divide(data[:,1], col2_max)
-
-   return data, labels
 
 if __name__ == '__main__':
    """
 
-   As a test case, load first 10 train images and
-   leave only those that have a digit 3,
-   and save them as .png files in the working dir
+   Example usage: 
+
+   Load first 10 train images and leave only those 
+   that display a digit 3, and save them as .png files 
+   in the working directory.
 
    """
 
-   images, labels = load_mnist(training=True, n_examples=10)
+   images, labels = load_mnist(n_examples=10, training=True)
    filtered = filter_by_digit_mnist(3, images, labels)
 
+   print("Saving images...")
    for i in range(len(filtered)):
       save_mnist_image(filtered[i], ".", "train" + str(i) + "filtered.png")
+   print("Done!")
 
 
    
