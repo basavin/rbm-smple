@@ -112,8 +112,3 @@ if __name__ == '__main__':
       save_mnist_image(filtered[i], ".", "train" + str(i) + "filtered.png")
    print("Done!")
 
-
-   
-
-
-
