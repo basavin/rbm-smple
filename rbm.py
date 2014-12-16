@@ -1,7 +1,7 @@
 """
 
-In this file, I provide an implementation of a Restricted
-Botlzmann machine with input units' values in range [0,1].
+In this file, I provide an implementation of Restricted
+Botlzmann Machine with input units' values in range [0,1].
 
 The notation and the training procedure followes the Hinton's paper
 "A Practical Guide to Training Restricted Boltzmann Machines", 2010.
